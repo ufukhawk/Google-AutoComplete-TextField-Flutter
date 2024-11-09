@@ -35,6 +35,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   FocusNode? focusNode;
   PlaceType? placeType;
   String? language;
+  Color? searchResultColor;
 
   GooglePlaceAutoCompleteTextField(
       {required this.textEditingController,
@@ -54,6 +55,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
       this.containerHorizontalPadding,
       this.containerVerticalPadding,
       this.focusNode,
+      this.searchResultColor,
       this.placeType,this.language='en'});
 
   @override
@@ -218,7 +220,7 @@ class _GooglePlaceAutoCompleteTextFieldState
                   link: this._layerLink,
                   offset: Offset(0.0, size.height + 5.0),
                   child: Material(
-                    color:Colors.transparent,
+                    color: widget.searchResultColor ?? Colors.transparent,
                       child: ListView.separated(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
