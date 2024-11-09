@@ -1,14 +1,11 @@
 library google_places_flutter;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_places_flutter/model/place_details.dart';
 import 'package:google_places_flutter/model/place_type.dart';
 import 'package:google_places_flutter/model/prediction.dart';
-
-import 'package:rxdart/subjects.dart';
-import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'DioErrorHandler.dart';
@@ -56,7 +53,8 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
       this.containerVerticalPadding,
       this.focusNode,
       this.searchResultColor,
-      this.placeType,this.language='en'});
+      this.placeType,
+      this.language = 'en'});
 
   @override
   _GooglePlaceAutoCompleteTextFieldState createState() =>
@@ -100,6 +98,15 @@ class _GooglePlaceAutoCompleteTextFieldState
               child: TextFormField(
                 decoration: widget.inputDecoration,
                 style: widget.textStyle,
+                onFieldSubmitted: (string) {
+                  if (alPredictions.length > 0) {
+                    widget.itemClick!(alPredictions[0]);
+                    if (widget.isLatLngRequired) {
+                      getPlaceDetailsFromPlaceId(alPredictions[0]);
+                    }
+                    removeOverlay();
+                  }
+                },
                 controller: widget.textEditingController,
                 focusNode: widget.focusNode ?? FocusNode(),
                 onChanged: (string) {
@@ -216,39 +223,39 @@ class _GooglePlaceAutoCompleteTextFieldState
                 width: size.width,
                 child: CompositedTransformFollower(
                   showWhenUnlinked: false,
-                 
                   link: this._layerLink,
                   offset: Offset(0.0, size.height + 5.0),
                   child: Material(
-                    color: widget.searchResultColor ?? Colors.transparent,
+                      color: widget.searchResultColor ?? Colors.transparent,
                       child: ListView.separated(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: alPredictions.length,
-                    separatorBuilder: (context, pos) =>
-                        widget.seperatedBuilder ?? SizedBox(),
-                    itemBuilder: (BuildContext context, int index) {
-                      return InkWell(
-                        onTap: () {
-                          var selectedData = alPredictions[index];
-                          if (index < alPredictions.length) {
-                            widget.itemClick!(selectedData);
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: alPredictions.length,
+                        separatorBuilder: (context, pos) =>
+                            widget.seperatedBuilder ?? SizedBox(),
+                        itemBuilder: (BuildContext context, int index) {
+                          return InkWell(
+                            onTap: () {
+                              var selectedData = alPredictions[index];
+                              if (index < alPredictions.length) {
+                                widget.itemClick!(selectedData);
 
-                            if (widget.isLatLngRequired) {
-                              getPlaceDetailsFromPlaceId(selectedData);
-                            }
-                            removeOverlay();
-                          }
+                                if (widget.isLatLngRequired) {
+                                  getPlaceDetailsFromPlaceId(selectedData);
+                                }
+                                removeOverlay();
+                              }
+                            },
+                            child: widget.itemBuilder != null
+                                ? widget.itemBuilder!(
+                                    context, index, alPredictions[index])
+                                : Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                        alPredictions[index].description!)),
+                          );
                         },
-                        child: widget.itemBuilder != null
-                            ? widget.itemBuilder!(
-                                context, index, alPredictions[index])
-                            : Container(
-                                padding: EdgeInsets.all(10),
-                                child: Text(alPredictions[index].description!)),
-                      );
-                    },
-                  )),
+                      )),
                 ),
               ));
     }
