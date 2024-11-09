@@ -106,6 +106,8 @@ class _GooglePlaceAutoCompleteTextFieldState
                     }
                     removeOverlay();
                   }
+                  // close keyboard
+                  FocusScope.of(context).requestFocus(FocusNode());
                 },
                 controller: widget.textEditingController,
                 focusNode: widget.focusNode ?? FocusNode(),
