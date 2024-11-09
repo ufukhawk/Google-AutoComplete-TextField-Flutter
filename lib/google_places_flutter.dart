@@ -214,9 +214,11 @@ class _GooglePlaceAutoCompleteTextFieldState
                 width: size.width,
                 child: CompositedTransformFollower(
                   showWhenUnlinked: false,
+                 
                   link: this._layerLink,
                   offset: Offset(0.0, size.height + 5.0),
                   child: Material(
+                    color:Colors.transparent,
                       child: ListView.separated(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
